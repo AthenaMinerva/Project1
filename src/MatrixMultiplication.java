@@ -1,73 +1,46 @@
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MatrixMultiplication {
     public static void main(String[] args) {
         int n = 13;
-        run(n);
-        System.out.println();
-        System.out.println("========================================================");
-        System.out.println();
-        run(n);
-        System.out.println();
-        run(n);
-        System.out.println();
-        run(n);
-        System.out.println();
-        run(n);
-        System.out.println();
-        run(n);
 
-/*        int[][] matrix1 = generateMatrix(n);
-        int[][] matrix2 = generateMatrix(n);
-//        printMatrix(matrix1, n);
-//        printMatrix(matrix2, n);
+        // Generate and print input matrices
+        int[][] matrixA = generateMatrix(n);
+        int[][] matrixB = generateMatrix(n);
+        printMatrix(matrixA);
+        printMatrix(matrixB);
 
+        // Brute Force Algorithm (Calculate runtime and print resulting matrix)
         long startTime = System.nanoTime();
-        int[][] bruteForceResult = bruteForce(matrix1, matrix2);
-        System.out.printf("Brute Force elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-//        printMatrix(bruteForceResult, n);
+        int[][] bruteForceResult = bruteForce(matrixA, matrixB);
+        System.out.printf("Brute Force elapsed time for n=%d: %f seconds\n", n, (System.nanoTime()-startTime)/(float)1000000000);
+        printMatrix(bruteForceResult);
 
+        // Naive Divide and Conquer Algorithm (Calculate runtime and print resulting matrix)
         startTime = System.nanoTime();
-        int[][] divideAndConquerResult = divideAndConquer(padMatrix(matrix1), padMatrix(matrix2));
-        System.out.printf("Divide and Conquer elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-//        printMatrix(divideAndConquerResult, n);
+        int[][] divideAndConquerResult = divideAndConquer(padMatrix(matrixA), padMatrix(matrixB));
+        System.out.printf("Divide and Conquer elapsed time for n=%d: %f seconds\n", n, (System.nanoTime()-startTime)/(float)1000000000);
+        printMatrix(divideAndConquerResult);
 
+        // Strassen's Algorithm (Calculate runtime and print resulting matrix)
         startTime = System.nanoTime();
-        int[][] strassenResult = strassen(padMatrix(matrix1), padMatrix(matrix2));
-        System.out.printf("Strassen elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-//        printMatrix(strassenResult, n);
+        int[][] strassenResult = strassen(padMatrix(matrixA), padMatrix(matrixB));
+        System.out.printf("Strassen elapsed time for n=%d: %f seconds\n", n, (System.nanoTime()-startTime)/(float)1000000000);
+        printMatrix(strassenResult);
 
-//        System.out.printf("Divide and Conquer == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(divideAndConquerResult, n)));
-//        System.out.printf("Strassen's Algorithm == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(strassenResult, n)));*/
+        // Compare Divide and Conquer algorithm results against brute force results to test accuracy
+        System.out.printf("Divide and Conquer == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(divideAndConquerResult, n)));
+        System.out.printf("Strassen's Algorithm == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(strassenResult, n)));
     }
 
-    public static void run(int n) {
-        int[][] matrix1 = generateMatrix(n);
-        int[][] matrix2 = generateMatrix(n);
-        //        printMatrix(matrix1, n);
-        //        printMatrix(matrix2, n);
-
-        // test
-//        matrixAddition(matrix1, matrix2, new int[n][n], 0, 0);
-        padMatrix(matrix1);
-
-        long startTime = System.nanoTime();
-        int[][] bruteForceResult = bruteForce(matrix1, matrix2);
-        System.out.printf("Brute Force elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-        //        printMatrix(bruteForceResult, n);
-
-        startTime = System.nanoTime();
-        int[][] divideAndConquerResult = divideAndConquer(padMatrix(matrix1), padMatrix(matrix2));
-        System.out.printf("Divide and Conquer elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-        //        printMatrix(divideAndConquerResult, n);
-
-        startTime = System.nanoTime();
-        int[][] strassenResult = strassen(padMatrix(matrix1), padMatrix(matrix2));
-        System.out.printf("Strassen elapsed time for n=%d: %f seconds\n\n", n, (System.nanoTime()-startTime)/(float)1000000000);
-        //        printMatrix(strassenResult, n);
-
-    }
-
+    /**
+     *  Multiply matrices using three nested for loops. O(n^3)
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     * @return the resulting matrix
+     */
     public static int[][] bruteForce(int[][] matrixA, int[][] matrixB) {
         int n = matrixA.length;
         int[][] resultMatrix = new int[n][n];
@@ -85,12 +58,34 @@ public class MatrixMultiplication {
         return resultMatrix;
     }
 
+    /**
+     * Initial divide and conquer call. O(n^3)
+     *
+     * Calls divideAndConquerHelper method to compute the matrix multiplication.
+     * Time complexity comes from the called divideAndConquerHelper method.
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     * @return the resulting matrix
+     */
     public static int[][] divideAndConquer(int[][] matrixA, int[][] matrixB) {
         return divideAndConquerHelper(matrixA, 0, 0, matrixB, 0, 0, matrixA.length);
     }
 
-    public static int[][] divideAndConquerHelper(int[][] matrixA, int aRowOfs, int aColOfs, int[][] matrixB,
-                                                 int bRowOfs, int bColOfs, int n) {
+    /**
+     * Multiply matrices using recursion. O(n^3)
+     *
+     * @param matrixA first input matrix
+     * @param aRowOfs starting row for matrixA
+     * @param aColOfs starting column for matrixA
+     * @param matrixB second input matrix
+     * @param bRowOfs starting row for matrixB
+     * @param bColOfs starting column for matrixB
+     * @param n size of quadrant to compute
+     * @return the resulting matrix
+     */
+    private static int[][] divideAndConquerHelper(int[][] matrixA, int aRowOfs, int aColOfs,
+                                                  int[][] matrixB, int bRowOfs, int bColOfs, int n) {
         int[][] resultMatrix = new int[n][n];
 
         if (n == 1) { // base case
@@ -122,12 +117,34 @@ public class MatrixMultiplication {
         return resultMatrix;
     }
 
+    /**
+     * Initial Strassen call. O(n^log7)
+     *
+     * Calls strassenHelper method to compute the matrix multiplication.
+     * Time complexity comes from the called strassenHelper method.
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     * @return the resulting matrix
+     */
     public static int[][] strassen(int[][] matrixA, int[][] matrixB) {
         return strassenHelper(matrixA, 0, 0, matrixB, 0, 0, matrixA.length);
     }
 
-    public static int[][] strassenHelper(int[][] matrixA, int aRowOfs, int aColOfs, int[][] matrixB,
-                                         int bRowOfs, int bColOfs, int n) {
+    /**
+     * Multiply matrices using optimal recursion. O(n^log7)
+     *
+     * @param matrixA first input matrix
+     * @param aRowOfs starting row for matrixA
+     * @param aColOfs starting column for matrixA
+     * @param matrixB second input matrix
+     * @param bRowOfs starting row for matrixB
+     * @param bColOfs starting column for matrixB
+     * @param n size of quadrant to compute
+     * @return the resulting matrix
+     */
+    private static int[][] strassenHelper(int[][] matrixA, int aRowOfs, int aColOfs,
+                                          int[][] matrixB, int bRowOfs, int bColOfs, int n) {
         int[][] resultMatrix = new int[n][n];
 
         if (n == 1) { // base case
@@ -210,20 +227,57 @@ public class MatrixMultiplication {
     }
 
 
-    // O(n^2)
+    /**
+     * Adds two matrices. O(n^2)
+     *
+     * Calls other matrixAddition method (filling in missing params with 0) to compute the matrix addition.
+     * Time complexity comes from the called matrixAddition method.
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     * @param resultMatrix where to put the resulting matrix
+     * @param resultRowOfs starting row for resultMatrix
+     * @param resultColOfs starting column for resultMatrix
+     * @return resultMatrix
+     */
     public static int[][] matrixAddition(int[][] matrixA, int[][] matrixB, int[][] resultMatrix, int resultRowOfs, int resultColOfs) {
         return matrixAddition(matrixA, 0, 0, matrixB, 0, 0,
                               resultMatrix, resultRowOfs, resultColOfs, matrixA.length);
     }
 
-    // O(n^2)
+    /**
+     * Subtracts two matrices. O(n^2)
+     *
+     * Calls other matrixSubtraction method (filling in missing params with 0) to compute the matrix subtraction.
+     * Time complexity comes from the called matrixSubtraction method.
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     * @param resultMatrix where to put the resulting matrix
+     * @param resultRowOfs starting row for resultMatrix
+     * @param resultColOfs starting column for resultMatrix
+     * @return resultMatrix
+     */
     public static int[][] matrixSubtraction(int[][] matrixA, int[][] matrixB, int[][] resultMatrix, int resultRowOfs, int resultColOfs) {
         return matrixSubtraction(matrixA, 0, 0, matrixB, 0, 0,
                                  resultMatrix, resultRowOfs, resultColOfs, matrixA.length);
     }
 
-
-    // O(n^2)
+    /**
+     * Adds two matrices. O(n^2)
+     *
+     * @param matrixA first input matrix
+     * @param aRowOfs starting row for matrixA
+     * @param aColOfs starting column for matrixA
+     * @param matrixB second input matrix
+     * @param bRowOfs starting row for matrixB
+     * @param bColOfs starting column for matrixB
+     * @param resultMatrix where to put the resulting matrix
+     * @param resultRowOfs starting row for resultMatrix
+     * @param resultColOfs starting column for resultMatrix
+     * @param n size of quadrant to compute
+     * @return resultMatrix
+     */
     public static int[][] matrixAddition(int[][] matrixA, int aRowOfs, int aColOfs,
                                          int[][] matrixB, int bRowOfs, int bColOfs,
                                          int[][] resultMatrix, int resultRowOfs, int resultColOfs, int n) {
@@ -236,7 +290,21 @@ public class MatrixMultiplication {
         return resultMatrix;
     }
 
-    // O(n^2)
+    /**
+     * Subtracts two matrices. O(n^2)
+     *
+     * @param matrixA first input matrix
+     * @param aRowOfs starting row for matrixA
+     * @param aColOfs starting column for matrixA
+     * @param matrixB second input matrix
+     * @param bRowOfs starting row for matrixB
+     * @param bColOfs starting column for matrixB
+     * @param resultMatrix where to put the resulting matrix
+     * @param resultRowOfs starting row for resultMatrix
+     * @param resultColOfs starting column for resultMatrix
+     * @param n size of quadrant to compute
+     * @return resultMatrix
+     */
     public static int[][] matrixSubtraction(int[][] matrixA, int aRowOfs, int aColOfs,
                                             int[][] matrixB, int bRowOfs, int bColOfs,
                                             int[][] resultMatrix, int resultRowOfs, int resultColOfs, int n) {
@@ -250,14 +318,13 @@ public class MatrixMultiplication {
     }
 
     /**
-     * Pad a 2D matrix so that its size is a power of 2.
-     *
-     * O(n^2); where n is the size of the original matrix
+     * Pad a 2D matrix so that its size is a power of 2. O(n^2)
      *
      * @param matrix the 2D matrix that needs padding
      * @return the padded 2D matrix
      */
     public static int[][] padMatrix(int[][] matrix) {
+        // Find next power of 2
         int n = matrix.length;
         int pow = 32 - Integer.numberOfLeadingZeros(n-1);
         int n_pow_2 = (int) Math.pow(2, pow);
@@ -265,9 +332,9 @@ public class MatrixMultiplication {
         if (n == n_pow_2) { // No need to pad the matrix
             return matrix;
         }
-        
-        int[][] paddedMatrix = new int[n_pow_2][n_pow_2];
 
+        // Initialize new larger array and copy over values
+        int[][] paddedMatrix = new int[n_pow_2][n_pow_2];
         for (int row = 0; row < n; row++) {
             System.arraycopy(matrix[row], 0, paddedMatrix[row], 0, n);
         }
@@ -278,15 +345,18 @@ public class MatrixMultiplication {
     // ----------------------------------------------------
     // ----------------- HELPER FUNCTIONS -----------------
     // ----------------------------------------------------
+
+    // Removes padding from matrix
+    // Only used to compare D&C arrays against the brute force array as a sanity check
     public static int[][] depadMatrix(int[][] matrix, int n) {
         int n_pow_2 = matrix.length;
 
-        if (n == n_pow_2) { // No need to pad the matrix
+        if (n == n_pow_2) { // No need to de-pad the matrix
             return matrix;
         }
 
+        // Initialize new smaller array and copy over values
         int[][] depaddedMatrix = new int[n][n];
-
         for (int row = 0; row < n; row++) {
             System.arraycopy(matrix[row], 0, depaddedMatrix[row], 0, n);
         }
@@ -294,6 +364,7 @@ public class MatrixMultiplication {
         return depaddedMatrix;
     }
 
+    // Randomly generates matrix of specified size
     public static int[][] generateMatrix(int n) {
         int[][] matrix = new int[n][n];
 
@@ -305,25 +376,13 @@ public class MatrixMultiplication {
         return matrix;
     }
 
-
-    public static void printMatrix(int[][] matrix, int n) {
-        for (int row = 0; row < n; row++) {
-            for (int col = 0; col < n; col++) {
-                System.out.printf("%5d", matrix[row][col]);
-            }
+    // Formats and prints matrix
+    public static void printMatrix(int[][] matrix) {
+        for (int[] rows : matrix) {
+            for (int elem : rows)
+                System.out.printf("%5d", elem);
             System.out.println();
         }
         System.out.println();
-
-//        System.out.println(Arrays.deepToString(matrix)
-//                                   .replace("], ", "]\n")
-//                                   .replace("[[", "[")
-//                                   .replace("]]", "]\n"));
-
-//        System.out.println(Arrays.deepToString(matrix)
-//                                   .replace("], ", "\n")
-//                                   .replace("[", "")
-//                                   .replace(",", "")
-//                                   .replace("]]", "\n"));
     }
 }

@@ -3,12 +3,42 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MatrixMultiplication {
     public static void main(String[] args) {
-        int n = 13;
+//        sanityCheck();
+        int n = 8;
+        run(generateMatrix(n), generateMatrix(n), n);
+    }
 
-        // Generate and print input matrices
-        int[][] matrixA = generateMatrix(n);
-        int[][] matrixB = generateMatrix(n);
+    /**
+     * Sanity check based on matrices from assignment.
+     */
+    public static void sanityCheck(){
+        int[][] matrixA = new int[][] {
+                {2, 0, -1, 6},
+                {3, 7, 8, 0},
+                {-5, 1, 6, -2},
+                {8, 0, 1, 7}
+        };
+        int[][] matrixB = new int[][] {
+                {0, 1, 6, 3},
+                {-2, 8, 7, 1},
+                {2, 0, -1, 0},
+                {9, 1, 6, -2}
+        };
+
+        run(matrixA, matrixB, 4);
+    }
+
+    /**
+     * Run all three matrix multiplication algorithms with the provided matrices.
+     *
+     * @param matrixA first input matrix
+     * @param matrixB second input matrix
+     */
+    public static void run(int[][] matrixA, int[][] matrixB, int n) {
+        // Print input matrices
+        System.out.println("Matrix A:");
         printMatrix(matrixA);
+        System.out.println("Matrix B:");
         printMatrix(matrixB);
 
         // Brute Force Algorithm (Calculate runtime and print resulting matrix)
@@ -33,6 +63,7 @@ public class MatrixMultiplication {
         System.out.printf("Divide and Conquer == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(divideAndConquerResult, n)));
         System.out.printf("Strassen's Algorithm == Brute Force: %b\n", Arrays.deepEquals(bruteForceResult, depadMatrix(strassenResult, n)));
     }
+
 
     /**
      *  Multiply matrices using three nested for loops. O(n^3)
